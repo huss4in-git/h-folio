@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+@font-face {
+  font-family: 'f1';
+  src: url('./Fonts/f1.woff2');
+}
+
+@font-face {
+  font-family: 'f2';
+  src: url('./Fonts/f2.woff2');
+}
+
+@font-face {
+  font-family: 'f3';
+  src: url('./Fonts/f3.woff2');
+}
