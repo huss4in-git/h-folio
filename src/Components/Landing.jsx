@@ -165,7 +165,7 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
 
         <p className="fl-blurb">
           Web Developer with
-          <br className="fl-br-mobile" />
+          
           decent taste working
           <br />
           across <CyclingWord words={["design", "concept", "motion"]} />

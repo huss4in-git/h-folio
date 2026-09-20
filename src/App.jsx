@@ -1,16 +1,15 @@
 import { useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Lenis from 'lenis'
 import './App.css'
-import AboutSection from './Components/About'
-import Footer from './Components/Footer'
-import Landing from './Components/Landing'
 import Nav from './Components/Nav'
-import BottomBlur from './Components/BottomBlur'
+import Home from './Pages/Home'
+import AboutMe from './Pages/AboutMe'
 
 function App() {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.1,      // higher = longer glide
+      duration: 1.1,
       smoothWheel: true,
       touchMultiplier: 1.6,
     })
@@ -29,13 +28,14 @@ function App() {
   }, [])
 
   return (
-    <>
+    <Router>
       <Nav />
-      <Landing />
-      <AboutSection />
-      <Footer />
-      <BottomBlur />
-    </>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutMe />} />
+        <Route path="/work" element={<div style={{ minHeight: '100vh', background: '#f3f3f1' }} />} />
+      </Routes>
+    </Router>
   )
 }
 

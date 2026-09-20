@@ -1,18 +1,26 @@
-const ITEMS = ["Home", "Work", "About"];
+import { useNavigate } from "react-router-dom";
 
-export default function Nav({ items = ITEMS, onSelect }) {
+const ITEMS = [
+  { label: "Home", path: "/" },
+  { label: "Work", path: "/work" },
+  { label: "About", path: "/about" },
+];
+
+export default function Nav({ items = ITEMS }) {
+  const navigate = useNavigate();
+
   return (
     <nav className="nv-root">
       <ul className="nv-pill">
         {items.map((item) => (
-          <li key={item}>
+          <li key={item.label}>
             <button
               type="button"
               className="nv-item"
-              onClick={() => onSelect?.(item)}
+              onClick={() => navigate(item.path)}
             >
               <span className="nv-dot" aria-hidden="true" />
-              {item}
+              {item.label}
             </button>
           </li>
         ))}
@@ -36,7 +44,7 @@ export default function Nav({ items = ITEMS, onSelect }) {
           gap: 4px;
           list-style: none;
           margin: 0;
-          padding: 5px;
+          padding: 3px;
           border-radius: 999px;
           background: rgba(232, 232, 230, 0.55);
           backdrop-filter: blur(16px) saturate(1.4);
@@ -61,18 +69,16 @@ export default function Nav({ items = ITEMS, onSelect }) {
           transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
         }
 
-        /* Dot is always in the DOM but collapsed to zero width, so it
-           expands on hover instead of popping in and shifting the text. */
-           .nv-dot {
-            width: 0;
-            height: 6px;
-            margin-right: 0;
-            border-radius: 50%;
-            background: #e5352b;
-            flex: 0 0 auto;
-            opacity: 0;
-            transition: width 0.22s ease, margin-right 0.22s ease, opacity 0.18s ease;
-          }
+        .nv-dot {
+          width: 0;
+          height: 6px;
+          margin-right: 0;
+          border-radius: 50%;
+          background: #e5352b;
+          flex: 0 0 auto;
+          opacity: 0;
+          transition: width 0.22s ease, margin-right 0.22s ease, opacity 0.18s ease;
+        }
 
         .nv-item:hover {
           background: #fff;
@@ -96,8 +102,6 @@ export default function Nav({ items = ITEMS, onSelect }) {
           }
           .nv-item:hover .nv-dot { width: 0; margin-right: 0; opacity: 0; }
         }
-
-       
       `}</style>
     </nav>
   );
