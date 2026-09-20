@@ -164,7 +164,9 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
         </div>
 
         <p className="fl-blurb">
-          Web Developer with decent taste working
+          Web Developer with
+          <br className="fl-br-mobile" />
+          decent taste working
           <br />
           across <CyclingWord words={["design", "concept", "motion"]} />
         </p>
@@ -283,6 +285,10 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
           color: #f0f0ee;
         }
 
+        /* Extra break that only applies below 720px — collapses to nothing
+           on desktop, so the blurb keeps its two-line setting there. */
+        .fl-br-mobile { display: none; }
+
         .fl-cycle-word {
           display: inline-block;
           opacity: 0;
@@ -314,44 +320,50 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
           .fl-line-1 { width: 58%; }
         }
 
-        /* Mobile keeps the desktop composition — staggered line widths,
-           blurb beside line 1, credit in the left column — rather than
-           stacking. */
-           @media (max-width: 720px) {
-            .fl-root { --fl-gutter: 5%; }
-          
-            .fl-hero {
-              justify-content: flex-end;
-              margin-top: 0;
-              padding-top: 0;
-              padding-bottom: 12vh;
-            }
-          
-            .fl-headline { row-gap: 1.6vh; }
-          
-            .fl-line { font-size: clamp(24px, 13vw, 90px); }
-          
-            .fl-line-1 { width: 55%; }
-            .fl-line-2 { width: 66%; margin-left: auto; }
-          
-            .fl-blurb {
-              top: auto;
-              bottom: 27.5vh;
-              left: 62%;
-              right: var(--fl-gutter);
-              max-width: none;
-              font-size: 8.5px;
-              line-height: 1.3;
-            }
-          
-            .fl-credit {
-              top: auto;
-              bottom: 20vh;
-              left: var(--fl-gutter);
-              font-size: 7.5px;
-              line-height: 1.35;
-            }
+        /* Reference caps the whole hero at ~78vh rather than a full screen —
+           the About section's top edge is visible without scrolling. The
+           video fills that shorter hero, so it needs no separate height. */
+        @media (max-width: 720px) {
+          .fl-root {
+            --fl-gutter: 5%;
+            min-height: 78vh;
           }
+
+          .fl-hero {
+            min-height: 78vh;
+            justify-content: flex-end;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 6.5vh;
+          }
+
+          .fl-headline { row-gap: 1.6vh; }
+
+          .fl-line { font-size: clamp(24px, 13vw, 90px); }
+
+          .fl-line-1 { width: 50%; }
+          .fl-line-2 { width: 66%; margin-left: auto; }
+
+          .fl-br-mobile { display: inline; }
+
+          .fl-blurb {
+            top: auto;
+            bottom: 21vh;
+            left: 66%;
+            right: var(--fl-gutter);
+            max-width: none;
+            font-size: 9px;
+            line-height: 1.3;
+          }
+
+          .fl-credit {
+            top: auto;
+            bottom: 16vh;
+            left: var(--fl-gutter);
+            font-size: 7.5px;
+            line-height: 1.35;
+          }
+        }
       `}</style>
     </div>
   );
