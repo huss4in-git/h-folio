@@ -324,18 +324,18 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
            the About section's top edge is visible without scrolling. The
            video fills that shorter hero, so it needs no separate height. */
         @media (max-width: 720px) {
-          .fl-root {
-            --fl-gutter: 5%;
-            min-height: 78vh;
-          }
-
-          .fl-hero {
-            min-height: 78vh;
-            justify-content: flex-end;
-            margin-top: 0;
-            padding-top: 0;
-            padding-bottom: 6.5vh;
-          }
+            .fl-root {
+                --fl-gutter: 5%;
+                min-height: 86vh;
+              }
+              
+              .fl-hero {
+                min-height: 86vh;
+                justify-content: flex-end;
+                margin-top: 0;
+                padding-top: 0;
+                padding-bottom: 6.5vh;
+              }
 
           .fl-headline { row-gap: 1.6vh; }
 
