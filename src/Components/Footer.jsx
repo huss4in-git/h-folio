@@ -307,16 +307,16 @@ export default function Footer({
         /* Glyphs are individual flex items so the line holds its width
            while characters swap — otherwise it would jitter sideways as
            each random letter has a different advance width. */
-           .ft-wordmark {
-            display: flex;
-            justify-content: flex-start;
-            padding: clamp(60px, 7vw, 150px) 0 clamp(20px, 2vw, 40px);
-            font-size: clamp(56px, 9.2vw, 190px);
-            line-height: 0.9;
-            text-transform: uppercase;
-            color: var(--ft-display);
-            white-space: nowrap;
-          }
+        .ft-wordmark {
+          display: flex;
+          justify-content: flex-start;
+          padding: clamp(60px, 7vw, 150px) 0 clamp(20px, 2vw, 40px);
+          font-size: clamp(56px, 9.2vw, 190px);
+          line-height: 0.9;
+          text-transform: uppercase;
+          color: var(--ft-display);
+          white-space: nowrap;
+        }
 
         .ft-glyph { display: inline-block; flex: 0 0 auto; }
 
@@ -327,11 +327,17 @@ export default function Footer({
         }
 
         @media (max-width: 720px) {
-          .ft-root { --ft-gutter: 5%; }
-          .ft-contact, .ft-meta { grid-template-columns: 1fr; gap: 30px; }
-          .ft-row { grid-template-columns: 1fr; gap: 4px; }
-          .ft-wordmark { font-size: clamp(42px, 15vw, 90px); }
-        }
+            .ft-root { --ft-gutter: 5%; }
+            .ft-contact, .ft-meta { grid-template-columns: 1fr; gap: 30px; }
+            .ft-row { grid-template-columns: 1fr; gap: 4px; }
+            /* ~20% smaller than before on mobile. */
+            .ft-wordmark {
+              font-size: clamp(32px, 11vw, 72px);
+              /* Clears the fixed BottomBlur strip so the wordmark isn't
+                 sitting under it at the very bottom of the page. */
+              padding-bottom: 12vh;
+            }
+          }
       `}</style>
     </footer>
   );

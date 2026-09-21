@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
+html,
+body {
+  /* Disables pull-to-refresh and the rubber-band bounce on mobile. */
+  overscroll-behavior-y: none;
 }
 
 @font-face {

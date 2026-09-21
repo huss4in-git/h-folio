@@ -236,6 +236,11 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
              down. Now that it's fixed and out of flow, that offset is added
              back here so the hero sits exactly where it did before. */
           margin-top: calc(84px - 4vh);
+
+          /* Cancels the margin-top so the section stays exactly one screen
+             tall — the video then fills the screen with no gap below. The
+             headline doesn't move; only empty space at the bottom is cut. */
+          margin-bottom: calc(-84px + 4vh);
         }
 
         .fl-headline {
@@ -264,9 +269,6 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
         .fl-glyph:first-child { margin-left: var(--fl-edge-l); }
         .fl-glyph:last-child { margin-right: var(--fl-edge-r); }
 
-        /* Line 1 stops short of the right edge so the blurb sits beside it.
-           Line 2 is indented from the left, leaving the empty column the
-           credit text occupies. */
         .fl-line-1 { width: 64%; }
         .fl-line-2 { width: 66%; margin-left: auto; }
 
@@ -285,8 +287,6 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
           color: #f0f0ee;
         }
 
-        /* Extra break that only applies below 720px — collapses to nothing
-           on desktop, so the blurb keeps its two-line setting there. */
         .fl-br-mobile { display: none; }
 
         .fl-cycle-word {
@@ -333,22 +333,30 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
                 min-height: 86vh;
                 justify-content: flex-end;
                 margin-top: 0;
+                margin-bottom: 0;
                 padding-top: 0;
                 padding-bottom: 6.5vh;
               }
 
           .fl-headline { row-gap: 1.6vh; }
 
-          .fl-line { font-size: clamp(24px, 13vw, 90px); }
+          /* ~11% larger than before on mobile. */
+          .fl-line { font-size: clamp(26px, 14.5vw, 100px); }
 
           .fl-line-1 { width: 50%; }
           .fl-line-2 { width: 66%; margin-left: auto; }
 
+          /* Line 1 overflows its box at this size, so width changes have no
+             effect. Pulling the space after the slash left shifts H SN as a
+             block while the slash itself stays put. */
+          .fl-line-1 .fl-glyph:nth-child(2) { margin-left: -0.15em; }
+
           .fl-br-mobile { display: inline; }
 
+          /* Raised to clear the taller line 1. */
           .fl-blurb {
             top: auto;
-            bottom: 21vh;
+            bottom: 24vh;
             left: 66%;
             right: var(--fl-gutter);
             max-width: none;
@@ -356,9 +364,10 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
             line-height: 1.3;
           }
 
+          /* Raised to follow the taller line 2. */
           .fl-credit {
             top: auto;
-            bottom: 16vh;
+            bottom: 18vh;
             left: var(--fl-gutter);
             font-size: 7.5px;
             line-height: 1.35;

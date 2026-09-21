@@ -148,7 +148,7 @@ export default function AboutSection({
     <section className="ab-root">
       <div className="ab-grid">
         <div className="ab-rail">
-          <span className="ab-label">
+          <span className="ab-label ab-label-lg">
             <Dot />
             Intro
           </span>
@@ -213,7 +213,7 @@ export default function AboutSection({
       </div>
 
       <div className="ab-footer">
-        <span className="ab-label">
+        <span className="ab-label ab-label-lg">
           <Dot />
           Select work
         </span>
@@ -264,6 +264,11 @@ export default function AboutSection({
           text-transform: uppercase;
           color: var(--ab-label);
           white-space: nowrap;
+        }
+
+        /* INTRO and SELECT WORK only — EXPERIENCE keeps the base size. */
+        .ab-label-lg {
+          font-size: clamp(13px, 0.9vw, 21px);
         }
 
         .ab-dot {
@@ -383,11 +388,11 @@ export default function AboutSection({
         .ab-readmore { margin: clamp(24px, 2.15vw, 55px) 0 0; }
 
         .ab-arrow {
-            width: 1.4em;
-            height: 1.4em;
-            color: var(--ab-accent);
-            flex: 0 0 auto;
-          }
+          width: 1.4em;
+          height: 1.4em;
+          color: var(--ab-accent);
+          flex: 0 0 auto;
+        }
 
         .ab-footer {
           display: flex;
@@ -407,12 +412,65 @@ export default function AboutSection({
           .ab-intro-text br { display: none; }
         }
 
+        /* Mobile, measured off the reference at 395px wide. Everything
+           stacks in one column EXCEPT the stats row, which keeps its label
+           column beside three cells — each cell puts its caption under its
+           number rather than beside it. */
         @media (max-width: 720px) {
-          .ab-root { --ab-gutter: 5%; }
-          .ab-grid { grid-template-columns: 1fr; gap: 26px; }
-          .ab-stats-cells { grid-template-columns: 1fr; gap: 14px; }
-          .ab-wordmark { font-size: clamp(42px, 13vw, 72px); }
+          .ab-root {
+            --ab-gutter: 5%;
+            padding-top: 48px;
+          }
+
+          .ab-grid { grid-template-columns: 1fr; gap: 28px; }
+
+          .ab-label-lg { font-size: 13px; }
+
+          .ab-head { grid-template-columns: 1fr; gap: 16px; padding-bottom: 22px; }
+
+          /* ~30px on a 395px screen — much smaller than desktop. */
+          .ab-wordmark { font-size: clamp(28px, 8vw, 44px); }
+
+          .ab-intro-text { font-size: 14px; line-height: 1.45; }
           .ab-intro-text br { display: none; }
+
+          .ab-tags { font-size: 11px; margin-top: 18px; }
+
+          /* Label column + three stat cells side by side, top-aligned. */
+          .ab-stats {
+            grid-template-columns: 26% 1fr;
+            align-items: start;
+            gap: 0;
+            padding: 16px 0 28px;
+          }
+
+          .ab-stats .ab-label { font-size: 10px; padding-top: 0.35em; }
+
+          .ab-stats-cells {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+          }
+
+          /* Caption drops below the number and is allowed to wrap. */
+          .ab-stat {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+          }
+
+          .ab-stat-value { font-size: clamp(24px, 7.6vw, 40px); }
+
+          .ab-stat-caption {
+            font-size: 10px;
+            line-height: 1.35;
+            white-space: normal;
+            padding-right: 6px;
+          }
+
+          .ab-readmore { margin-top: 22px; font-size: 14px; }
+          .ab-showall { font-size: 14px; }
+
+          .ab-footer { padding: 72px 0 24px; }
         }
       `}</style>
     </section>
