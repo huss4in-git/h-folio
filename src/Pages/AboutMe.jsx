@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import BottomBlur from "../Components/BottomBlur";
+import AboutIntro from "../Components/AboutIntro";
+import Footer from "../Components/Footer";
 
 /**
  * AboutMe — src/Pages/AboutMe.jsx
@@ -174,177 +176,188 @@ export default function AboutMe({
   const statsInView = useInView(statsRef);
 
   return (
-    <section className="ah-root">
-      <div className="ah-headline" ref={headlineRef}>
-        <ScrambleLine groups={LINE_1} baseDelay={150} active={inView} />
-        <ScrambleLine groups={LINE_2} baseDelay={630} active={inView} />
-      </div>
+    <>
+      <section className="ah-root">
+        <div className="ah-headline" ref={headlineRef}>
+          <ScrambleLine groups={LINE_1} baseDelay={150} active={inView} />
+          <ScrambleLine groups={LINE_2} baseDelay={630} active={inView} />
+        </div>
 
-      <div className="ah-rail">
-        <div className="ah-name">
-          {nameMark.map((line, i) => (
-            <span key={i}>{line}</span>
+        <div className="ah-rail">
+          <div className="ah-name">
+            {nameMark.map((line, i) => (
+              <span key={i}>{line}</span>
+            ))}
+          </div>
+          <span className="ah-scroll">{scrollCue}</span>
+        </div>
+
+        <div className="ah-stats" ref={statsRef}>
+          {stats.map((stat, i) => (
+            <div className="ah-stat" key={stat.label}>
+              <span className="ah-stat-label">
+                <Dot />
+                {stat.label}
+              </span>
+              <ScrambleValue
+                text={stat.value}
+                delay={120 + i * 180}
+                active={statsInView}
+              />
+            </div>
           ))}
         </div>
-        <span className="ah-scroll">{scrollCue}</span>
-      </div>
 
-      <div className="ah-stats" ref={statsRef}>
-        {stats.map((stat, i) => (
-          <div className="ah-stat" key={stat.label}>
-            <span className="ah-stat-label">
-              <Dot />
-              {stat.label}
-            </span>
-            <ScrambleValue
-              text={stat.value}
-              delay={120 + i * 180}
-              active={statsInView}
-            />
-          </div>
-        ))}
-      </div>
+        <style>{`
+          .ah-root {
+            --ah-gutter: 1.3%;
+            --ah-accent: #e5352b;
+            --ah-display: #3c3c3c;  /* wordmark + numerals */
+            --ah-label: #8e8e8e;    /* small labels, name mark, scroll cue */
+            --ah-rule: #cfcfcc;
 
-      <BottomBlur height="9vh" />
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 17vh var(--ah-gutter) 10vh;
+            background: #f3f3f1;
+            font-family: 'f1', 'Segoe UI', sans-serif;
+            letter-spacing: normal;
+            overflow: hidden;
+          }
 
-      <style>{`
-        .ah-root {
-          --ah-gutter: 1.3%;
-          --ah-accent: #e5352b;
-          --ah-display: #3c3c3c;  /* wordmark + numerals */
-          --ah-label: #8e8e8e;    /* small labels, name mark, scroll cue */
-          --ah-rule: #cfcfcc;
+          .ah-root *, .ah-root *::before, .ah-root *::after { box-sizing: border-box; }
 
-          position: relative;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          padding: 17vh var(--ah-gutter) 10vh;
-          background: #f3f3f1;
-          font-family: 'f1', 'Segoe UI', sans-serif;
-          letter-spacing: normal;
-          overflow: hidden;
-        }
+          /* --- wordmark ----------------------------------------------
+             Cap height measures ~127px on a 1210px viewport → ~14.9vw em,
+             with line-height 0.93 giving the ~167px baseline spacing. */
+          .ah-headline {
+            display: flex;
+            flex-direction: column;
+            font-size: clamp(52px, 14.9vw, 230px);
+            line-height: 0.93;
+            color: var(--ah-display);
+          }
 
-        .ah-root *, .ah-root *::before, .ah-root *::after { box-sizing: border-box; }
+          /* Each line is a positioning context; its height is one line box,
+             since the groups inside are taken out of flow. */
+          .ah-line {
+            position: relative;
+            display: block;
+            height: 0.93em;
+            font-weight: 400;
+            text-transform: uppercase;
+            white-space: nowrap;
+          }
 
-        /* --- wordmark ------------------------------------------------
-           Cap height measures ~127px on a 1210px viewport → ~14.9vw em,
-           with line-height 0.93 giving the ~167px baseline spacing. */
-        .ah-headline {
-          display: flex;
-          flex-direction: column;
-          font-size: clamp(52px, 14.9vw, 230px);
-          line-height: 0.93;
-          color: var(--ah-display);
-        }
+          .ah-group {
+            position: absolute;
+            top: 0;
+            display: inline-flex;
+          }
 
-        /* Each line is a positioning context; its height is one line box,
-           since the groups inside are taken out of flow. */
-        .ah-line {
-          position: relative;
-          display: block;
-          height: 0.93em;
-          font-weight: 400;
-          text-transform: uppercase;
-          white-space: nowrap;
-        }
+          .ah-glyph { display: inline-block; }
 
-        .ah-group {
-          position: absolute;
-          top: 0;
-          display: inline-flex;
-        }
-
-        .ah-glyph { display: inline-block; }
-
-        /* --- left rail: name mark + scroll cue ---------------------- */
-        .ah-rail {
-          position: absolute;
-          left: var(--ah-gutter);
-          top: 41.5%;
-          display: flex;
-          flex-direction: column;
-          gap: 15vh;
-          font-family: 'f3', 'Segoe UI', sans-serif;
-          font-size: clamp(12px, 0.95vw, 19px);
-          line-height: 1.45;
-          text-transform: uppercase;
-          color: var(--ah-label);
-        }
-
-        .ah-name { display: flex; flex-direction: column; }
-
-        /* --- stats row ---------------------------------------------- */
-        .ah-stats {
-          margin-top: auto;
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.7%;
-        }
-
-        .ah-stat { display: flex; flex-direction: column; }
-
-        .ah-stat-label {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.75em;
-          padding-bottom: 0.55em;
-          border-bottom: 1px solid var(--ah-rule);
-          font-family: 'f3', 'Segoe UI', sans-serif;
-          font-size: clamp(10px, 0.72vw, 15px);
-          line-height: 1;
-          text-transform: uppercase;
-          color: var(--ah-label);
-          white-space: nowrap;
-        }
-
-        .ah-dot {
-          width: 0.45em;
-          height: 0.45em;
-          border-radius: 50%;
-          background: var(--ah-accent);
-          flex: 0 0 auto;
-        }
-
-        /* inline-flex so the per-character spans sit in a row; tabular
-           figures keep the width steady while digits cycle. */
-        .ah-stat-value {
-          display: inline-flex;
-          margin-top: 0.1em;
-          font-size: clamp(44px, 7.3vw, 110px);
-          line-height: 1;
-          font-weight: 400;
-          font-variant-numeric: tabular-nums;
-          color: var(--ah-display);
-        }
-
-        /* --- responsive --------------------------------------------- */
-        @media (max-width: 1024px) {
-          .ah-root { --ah-gutter: 3.4%; padding-top: 18vh; }
-          .ah-rail { top: 38%; gap: 11vh; }
-          .ah-stat-value { font-size: clamp(38px, 8vw, 88px); }
-        }
-
-        @media (max-width: 720px) {
-          .ah-root { --ah-gutter: 5%; padding-top: 16vh; padding-bottom: 6vh; }
-          .ah-headline { font-size: clamp(40px, 17vw, 110px); }
+          /* --- left rail: name mark + scroll cue -------------------- */
           .ah-rail {
-            position: static;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 0;
-            margin-top: 5vh;
+            position: absolute;
+            left: var(--ah-gutter);
+            top: 41.5%;
+            display: flex;
+            flex-direction: column;
+            gap: 10vh;
+            font-family: 'f3', 'Segoe UI', sans-serif;
+            font-size: clamp(12px, 0.95vw, 19px);
+            line-height: 1.45;
+            text-transform: uppercase;
+            color: var(--ah-label);
           }
+
+          .ah-name {
+            display: flex;
+            flex-direction: column;
+            font-size: clamp(15px, 1.25vw, 25px);
+          }
+
+          /* --- stats row -------------------------------------------- */
           .ah-stats {
-            grid-template-columns: 1fr;
-            gap: 4vh;
-            margin-top: 8vh;
+            margin-top: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.7%;
           }
-          .ah-stat-value { font-size: clamp(44px, 16vw, 80px); }
-        }
-      `}</style>
-    </section>
+
+          .ah-stat { display: flex; flex-direction: column; }
+
+          .ah-stat-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75em;
+            padding-bottom: 0.55em;
+            border-bottom: 1px solid var(--ah-rule);
+            font-family: 'f3', 'Segoe UI', sans-serif;
+            font-size: clamp(10px, 0.72vw, 15px);
+            line-height: 1;
+            text-transform: uppercase;
+            color: var(--ah-label);
+            white-space: nowrap;
+          }
+
+          .ah-dot {
+            width: 0.45em;
+            height: 0.45em;
+            border-radius: 50%;
+            background: var(--ah-accent);
+            flex: 0 0 auto;
+          }
+
+          /* inline-flex so the per-character spans sit in a row; tabular
+             figures keep the width steady while digits cycle. */
+          .ah-stat-value {
+            display: inline-flex;
+            margin-top: 0.1em;
+            font-size: clamp(44px, 7.3vw, 110px);
+            line-height: 1;
+            font-weight: 400;
+            font-variant-numeric: tabular-nums;
+            color: var(--ah-display);
+          }
+
+          /* --- responsive ------------------------------------------- */
+          @media (max-width: 1024px) {
+            .ah-root { --ah-gutter: 3.4%; padding-top: 18vh; }
+            .ah-rail { top: 38%; gap: 8vh; }
+            .ah-stat-value { font-size: clamp(38px, 8vw, 88px); }
+          }
+
+          @media (max-width: 720px) {
+            .ah-root { --ah-gutter: 5%; padding-top: 16vh; padding-bottom: 6vh; }
+            .ah-headline { font-size: clamp(40px, 17vw, 110px); }
+            .ah-rail {
+              position: static;
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: flex-end;
+              gap: 0;
+              margin-top: 5vh;
+            }
+            .ah-stats {
+              grid-template-columns: 1fr;
+              gap: 4vh;
+              margin-top: 8vh;
+            }
+            .ah-stat-value { font-size: clamp(44px, 16vw, 80px); }
+          }
+        `}</style>
+      </section>
+
+      <AboutIntro />
+      <Footer />
+
+      {/* Last, so the blur strip sits over the whole page rather than
+          being clipped by the hero's overflow: hidden. */}
+      <BottomBlur height="9vh" />
+    </>
   );
 }

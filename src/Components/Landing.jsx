@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Landing
  * -------
- * Hero where each headline line stacks in with a "scramble/decode" text
- * effect: every character starts random and resolves left-to-right into its
- * final word. Replays each time the hero scrolls back into view.
+ * Hero where each headline line types in from the left: characters appear
+ * one at a time, flicker through random glyphs for a few ticks, then lock
+ * to their final letter. All three lines start together and replay each
+ * time the hero scrolls back into view.
  *
  * Pass your own clip via `videoSrc` (defaults to "/background.mp4", so drop
  * a file at that path in public/, or pass a full URL). `posterSrc` shows
@@ -25,46 +26,44 @@ function randomChar() {
 }
 
 /**
- * Reveals `finalText` left-to-right, scrambling unrevealed characters each
- * tick. While `active` is false it holds a scrambled state, so the reveal
- * plays fresh the next time the block enters the viewport.
+ * Types `finalText` in from the left: each position stays hidden until the
+ * cursor reaches it, flickers through random characters for a few ticks,
+ * then locks to its final glyph. Returns one entry per character so the
+ * caller can keep unrevealed slots in the layout without showing them.
  */
-function useScrambleText(finalText, { active = true, revealDelay = 0, holdMs = 90 } = {}) {
-  const [display, setDisplay] = useState(() =>
-    finalText.replace(/\S/g, () => randomChar())
-  );
-  const revealedRef = useRef(0);
+function useScrambleText(
+  finalText,
+  { active = true, revealDelay = 0, holdMs = 100, trail = 3 } = {}
+) {
+  const blank = () => finalText.split("").map((ch) => ({ ch, hidden: true }));
+  const [slots, setSlots] = useState(blank);
 
   useEffect(() => {
     if (!active) {
-      // Reset to noise while off-screen so the next entry re-runs visibly.
-      setDisplay(finalText.replace(/\S/g, () => randomChar()));
+      setSlots(blank());
       return;
     }
 
-    revealedRef.current = 0;
+    let cursor = 0;
     let tickHandle;
 
     const tick = () => {
-      setDisplay(
-        finalText
-          .split("")
-          .map((ch, i) => {
-            if (ch === " ") return " ";
-            if (i < revealedRef.current) return finalText[i];
-            return randomChar();
-          })
-          .join("")
+      setSlots(
+        finalText.split("").map((ch, i) => {
+          if (ch === " ") return { ch: " ", hidden: i >= cursor };
+          // Locked in.
+          if (i < cursor - trail) return { ch, hidden: false };
+          // Inside the flickering window just behind the cursor.
+          if (i < cursor) return { ch: randomChar(), hidden: false };
+          // Not reached yet.
+          return { ch, hidden: true };
+        })
       );
 
-      // Reveal roughly one more character each tick while still scrambling
-      // the rest, so it reads as a decode rather than a typewriter.
-      if (Math.random() < 0.6 && revealedRef.current < finalText.length) {
-        revealedRef.current += 1;
-      }
+      cursor += 1;
 
-      if (revealedRef.current >= finalText.length) {
-        setDisplay(finalText);
+      if (cursor > finalText.length + trail) {
+        setSlots(finalText.split("").map((ch) => ({ ch, hidden: false })));
         return;
       }
       tickHandle = setTimeout(tick, holdMs);
@@ -75,9 +74,9 @@ function useScrambleText(finalText, { active = true, revealDelay = 0, holdMs = 9
       clearTimeout(startTimeout);
       clearTimeout(tickHandle);
     };
-  }, [finalText, active, revealDelay, holdMs]);
+  }, [finalText, active, revealDelay, holdMs, trail]);
 
-  return display;
+  return slots;
 }
 
 /** True whenever the element is in view; flips back out so it can re-fire. */
@@ -101,15 +100,24 @@ function useInView(ref, { threshold = 0.25 } = {}) {
 }
 
 function ScrambleLine({ text, delay = 0, className, active = true }) {
-  const value = useScrambleText(text, { active, revealDelay: delay, holdMs: 55 });
-  // Each character is its own flex item so the line justifies edge-to-edge,
-  // the way the display type is set in the reference. A space becomes an
-  // empty slot, producing the wider gap between letter groups.
+  const slots = useScrambleText(text, {
+    active,
+    revealDelay: delay,
+    holdMs: 75,
+    trail: 6,
+  });  // Each character is its own flex item so the line justifies edge-to-edge.
+  // Unrevealed slots use visibility rather than display, so the line keeps
+  // its full width from the first frame and nothing shifts as letters land.
   return (
-    <span className={`fl-line ${className || ""}`}>
-      {value.split("").map((ch, i) => (
-        <span className="fl-glyph" key={i}>
-          {ch === " " ? "\u00A0" : ch}
+    <span className={`fl-line ${className || ""}`} aria-label={text}>
+      {slots.map((slot, i) => (
+        <span
+          className="fl-glyph"
+          key={i}
+          aria-hidden="true"
+          style={{ visibility: slot.hidden ? "hidden" : "visible" }}
+        >
+          {slot.ch === " " ? "\u00A0" : slot.ch}
         </span>
       ))}
     </span>
@@ -157,10 +165,11 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
       <div className="fl-scrim" aria-hidden="true" />
 
       <main className="fl-hero">
+        {/* Same delay on all three, so the lines type in together. */}
         <div className="fl-headline" ref={headlineRef}>
           <ScrambleLine text="/ H SN" delay={150} className="fl-line-1" active={inView} />
-          <ScrambleLine text="N ZAAN" delay={450} className="fl-line-2" active={inView} />
-          <ScrambleLine text="PORTFOLIO" delay={750} className="fl-line-3" active={inView} />
+          <ScrambleLine text="N ZAAN" delay={150} className="fl-line-2" active={inView} />
+          <ScrambleLine text="PORTFOLIO" delay={150} className="fl-line-3" active={inView} />
         </div>
 
         <p className="fl-blurb">
@@ -232,6 +241,9 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
           padding-left: var(--fl-gutter);
           padding-right: var(--fl-gutter);
 
+          /* Content is vertically centred, so bottom padding lifts it. */
+          padding-bottom: 8vh;
+
           /* The nav used to take ~84px of flow above this block and push it
              down. Now that it's fixed and out of flow, that offset is added
              back here so the hero sits exactly where it did before. */
@@ -272,9 +284,11 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
         .fl-line-1 { width: 64%; }
         .fl-line-2 { width: 66%; margin-left: auto; }
 
+        /* Positioned against the section, not the hero, so these don't
+           follow the hero's padding — they carry their own matching lift. */
         .fl-blurb {
           position: absolute;
-          top: 26.5%;
+          top: 22.5%;
           left: 69.4%;
           right: var(--fl-gutter);
           max-width: 24ch;
@@ -303,10 +317,10 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
         .fl-credit {
           position: absolute;
           z-index: 4;
-          left: var(--fl-gutter);
-          top: 43%;
+          left: calc(var(--fl-gutter) + 0.8%);
+          top: 39%;
           font-family: 'f2', 'Segoe UI', sans-serif;
-          font-size: 11px;
+          font-size: 12px;
           line-height: 1.3;
           letter-spacing: 0.02em;
           text-transform: uppercase;
@@ -316,7 +330,7 @@ export default function Landing({ videoSrc = "/background.mp4", posterSrc }) {
         /* Tablet / small laptop: pull the blurb in and let line 1 breathe. */
         @media (max-width: 1024px) {
           .fl-root { --fl-gutter: 3.4%; }
-          .fl-blurb { left: 62%; top: 24%; }
+          .fl-blurb { left: 62%; top: 20%; }
           .fl-line-1 { width: 58%; }
         }
 

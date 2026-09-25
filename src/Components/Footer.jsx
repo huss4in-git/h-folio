@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Footer — src/Components/Footer.jsx
  * Contact block, live clock, and the oversized CONTACT wordmark, which
- * decodes from scrambled characters every time it scrolls into view.
+ * types in from the left every time it scrolls into view.
  * Fonts: 'f1' (display — wordmark, CONTACT label, logo), 'f2' (contact
  * values), 'f3' (small labels: mail, linkedin, time, date).
  */
@@ -15,44 +15,44 @@ function randomChar() {
 }
 
 /**
- * Resolves `finalText` left-to-right, scrambling unrevealed characters each
- * tick. While `active` is false it holds a scrambled state, so the reveal
- * always plays fresh the next time the block enters the viewport.
+ * Types `finalText` in from the left: each position stays hidden until the
+ * cursor reaches it, flickers through random characters for a few ticks,
+ * then locks to its final glyph. Returns one entry per character so the
+ * caller can keep unrevealed slots in the layout without showing them.
  */
-function useScrambleText(finalText, { active = true, revealDelay = 0, holdMs = 55 } = {}) {
-  const [display, setDisplay] = useState(() =>
-    finalText.replace(/\S/g, () => randomChar())
-  );
-  const revealedRef = useRef(0);
+function useScrambleText(
+  finalText,
+  { active = true, revealDelay = 0, holdMs = 75, trail = 6 } = {}
+) {
+  const blank = () => finalText.split("").map((ch) => ({ ch, hidden: true }));
+  const [slots, setSlots] = useState(blank);
 
   useEffect(() => {
     if (!active) {
-      // Reset to noise while off-screen so the next entry re-runs visibly.
-      setDisplay(finalText.replace(/\S/g, () => randomChar()));
+      setSlots(blank());
       return;
     }
 
-    revealedRef.current = 0;
+    let cursor = 0;
     let tickHandle;
 
     const tick = () => {
-      setDisplay(
-        finalText
-          .split("")
-          .map((ch, i) => {
-            if (ch === " ") return " ";
-            if (i < revealedRef.current) return finalText[i];
-            return randomChar();
-          })
-          .join("")
+      setSlots(
+        finalText.split("").map((ch, i) => {
+          if (ch === " ") return { ch: " ", hidden: i >= cursor };
+          // Locked in.
+          if (i < cursor - trail) return { ch, hidden: false };
+          // Inside the flickering window just behind the cursor.
+          if (i < cursor) return { ch: randomChar(), hidden: false };
+          // Not reached yet.
+          return { ch, hidden: true };
+        })
       );
 
-      if (Math.random() < 0.6 && revealedRef.current < finalText.length) {
-        revealedRef.current += 1;
-      }
+      cursor += 1;
 
-      if (revealedRef.current >= finalText.length) {
-        setDisplay(finalText);
+      if (cursor > finalText.length + trail) {
+        setSlots(finalText.split("").map((ch) => ({ ch, hidden: false })));
         return;
       }
       tickHandle = setTimeout(tick, holdMs);
@@ -63,9 +63,9 @@ function useScrambleText(finalText, { active = true, revealDelay = 0, holdMs = 5
       clearTimeout(startTimeout);
       clearTimeout(tickHandle);
     };
-  }, [finalText, active, revealDelay, holdMs]);
+  }, [finalText, active, revealDelay, holdMs, trail]);
 
-  return display;
+  return slots;
 }
 
 /** True whenever the element is in view; flips back out so it can re-fire. */
@@ -134,7 +134,7 @@ export default function Footer({
   const { time, date } = useClock();
   const wordmarkRef = useRef(null);
   const inView = useInView(wordmarkRef);
-  const decoded = useScrambleText(wordmark, { active: inView, revealDelay: 120 });
+  const slots = useScrambleText(wordmark, { active: inView, revealDelay: 120 });
 
   return (
     <footer className="ft-root">
@@ -188,9 +188,14 @@ export default function Footer({
       {/* aria-label carries the real text, since the visible characters
           are mid-scramble for the first second. */}
       <div className="ft-wordmark" ref={wordmarkRef} aria-label={wordmark}>
-        {decoded.split("").map((ch, i) => (
-          <span className="ft-glyph" key={i} aria-hidden="true">
-            {ch === " " ? "\u00A0" : ch}
+        {slots.map((slot, i) => (
+          <span
+            className="ft-glyph"
+            key={i}
+            aria-hidden="true"
+            style={{ visibility: slot.hidden ? "hidden" : "visible" }}
+          >
+            {slot.ch === " " ? "\u00A0" : slot.ch}
           </span>
         ))}
       </div>
@@ -327,17 +332,17 @@ export default function Footer({
         }
 
         @media (max-width: 720px) {
-            .ft-root { --ft-gutter: 5%; }
-            .ft-contact, .ft-meta { grid-template-columns: 1fr; gap: 30px; }
-            .ft-row { grid-template-columns: 1fr; gap: 4px; }
-            /* ~20% smaller than before on mobile. */
-            .ft-wordmark {
-              font-size: clamp(32px, 11vw, 72px);
-              /* Clears the fixed BottomBlur strip so the wordmark isn't
-                 sitting under it at the very bottom of the page. */
-              padding-bottom: 12vh;
-            }
+          .ft-root { --ft-gutter: 5%; }
+          .ft-contact, .ft-meta { grid-template-columns: 1fr; gap: 30px; }
+          .ft-row { grid-template-columns: 1fr; gap: 4px; }
+          /* ~20% smaller than before on mobile. */
+          .ft-wordmark {
+            font-size: clamp(32px, 11vw, 72px);
+            /* Clears the fixed BottomBlur strip so the wordmark isn't
+               sitting under it at the very bottom of the page. */
+            padding-bottom: 12vh;
           }
+        }
       `}</style>
     </footer>
   );

@@ -46,9 +46,9 @@ export default function Nav({ items = ITEMS }) {
           margin: 0;
           padding: 3px;
           border-radius: 999px;
-          background: rgba(232, 232, 230, 0.55);
-          backdrop-filter: blur(16px) saturate(1.4);
-          -webkit-backdrop-filter: blur(16px) saturate(1.4);
+          background: rgba(232, 232, 230, 0.72);
+          backdrop-filter: blur(26px) saturate(1.4);
+          -webkit-backdrop-filter: blur(26px) saturate(1.4);
           border: 1px solid rgba(255, 255, 255, 0.28);
         }
 
@@ -64,7 +64,7 @@ export default function Nav({ items = ITEMS }) {
           font-size: 18px;
           line-height: 1;
           letter-spacing: normal;
-          color: #4a4a4a;
+          color: #6f6f6f;
           white-space: nowrap;
           transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
         }
