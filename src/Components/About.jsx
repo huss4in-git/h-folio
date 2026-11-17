@@ -1,8 +1,11 @@
 /**
  * AboutSection — src/Components/About.jsx
  * Fonts: 'f1' (display — wordmark, stat numerals), 'f2' (intro paragraph,
- * tags), 'f3' (small labels: intro, experience, captions, read more,
- * show all). All registered globally in index.css.
+ * tags), 'f3' (small labels: intro, experience, captions, read more).
+ * All registered globally in index.css.
+ *
+ * The "Select work / Show all" strip that used to close this section now
+ * lives at the top of Works.jsx, which follows it on the home page.
  *
  * Sizes and spacing below are measured off the reference at a 2560px-wide
  * viewport, then expressed in vw so the whole block scales as one unit.
@@ -138,7 +141,6 @@ export default function AboutSection({
   stats = DEFAULT_STATS,
   statsLabel = "Experience",
   onReadMore,
-  onShowAll,
 }) {
   const introLines = Array.isArray(intro) ? intro : [intro];
   const wordmarkRef = useRef(null);
@@ -218,17 +220,6 @@ export default function AboutSection({
         </div>
       </div>
 
-      <div className="ab-footer">
-        <span className="ab-label ab-label-lg">
-          <Dot />
-          Select work
-        </span>
-        <button type="button" className="ab-showall" onClick={onShowAll}>
-          Show all
-          <ArrowIcon />
-        </button>
-      </div>
-
       <style>{`
         .ab-root {
           --ab-gutter: 1.56%;
@@ -241,10 +232,11 @@ export default function AboutSection({
           --ab-rule: #d2d2cf;
 
           position: relative;
-          min-height: 50vh;
           display: flex;
           flex-direction: column;
-          padding: clamp(48px, 6.3vw, 160px) var(--ab-gutter) 0;
+          /* Bottom padding keeps the space the old footer strip used to take,
+             so Works' own header doesn't crowd "Read more". */
+          padding: clamp(48px, 6.3vw, 160px) var(--ab-gutter) clamp(40px, 5vw, 128px);
           background: #f3f3f1;
           font-family: 'f1', 'Segoe UI', sans-serif;
           letter-spacing: normal;
@@ -272,7 +264,7 @@ export default function AboutSection({
           white-space: nowrap;
         }
 
-        /* INTRO and SELECT WORK only — EXPERIENCE keeps the base size. */
+        /* INTRO only — EXPERIENCE keeps the base size. */
         .ab-label-lg {
           font-size: clamp(13px, 0.9vw, 21px);
         }
@@ -374,8 +366,7 @@ export default function AboutSection({
           white-space: nowrap;
         }
 
-        .ab-readmore,
-        .ab-showall {
+        .ab-readmore {
           display: inline-flex;
           align-items: center;
           gap: 0.7em;
@@ -391,21 +382,13 @@ export default function AboutSection({
           color: var(--ab-label);
         }
 
-        .ab-readmore { margin: clamp(24px, 2.15vw, 55px) 0 0; }
+        .ab-readmore { margin: clamp(24px, 2.15vw, 55px) 0 0; align-self: flex-start; }
 
         .ab-arrow {
           width: 1.4em;
           height: 1.4em;
           color: var(--ab-accent);
           flex: 0 0 auto;
-        }
-
-        .ab-footer {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-top: auto;
-          padding: clamp(28px, 2.4vw, 62px) 0 clamp(18px, 1.8vw, 46px);
         }
 
         @media (max-width: 1024px) {
@@ -474,9 +457,8 @@ export default function AboutSection({
           }
 
           .ab-readmore { margin-top: 22px; font-size: 14px; }
-          .ab-showall { font-size: 14px; }
 
-          .ab-footer { padding: 72px 0 24px; }
+          .ab-root { padding-bottom: 40px; }
         }
       `}</style>
     </section>

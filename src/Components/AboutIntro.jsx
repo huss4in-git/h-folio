@@ -27,7 +27,7 @@ const DEFAULT_BLURB = [
 
 const DEFAULT_SPECS = [
   { key: "Role", value: "Web developer / designer" },
-  { key: "Based", value: "Kochi, IN — IST" },
+  { key: "Based", value: "Calicut, IN — IST" },
   { key: "Stack", value: "React, Go, SQL Server" },
   { key: "Focus", value: "Interfaces & integrations" },
   { key: "Status", value: "Open to work" },
@@ -52,7 +52,7 @@ export default function AboutIntro({
   blurb = DEFAULT_BLURB,
   tags = DEFAULT_TAGS,
   specs = DEFAULT_SPECS,
-  panelTitle = "H.NIZAAN",
+  panelTitle = "HUSSAIN NIZAAN",
 }) {
   const blurbLines = Array.isArray(blurb) ? blurb : [blurb];
 
@@ -180,6 +180,17 @@ export default function AboutIntro({
           pointer-events: none;
         }
 
+        /* --- content column -----------------------------------------
+           A size container, so --ai-indent (in cqw) measures the same
+           distance at any nesting depth. A % padding would resolve against
+           each element's own parent, which is why the blurb and tags —
+           inside the narrow 34% column — used to sit left of the body. */
+        .ai-main {
+          container-type: inline-size;
+          --ai-indent: 0.9cqw;
+          min-width: 0;
+        }
+
         /* --- heading ------------------------------------------------ */
         .ai-heading {
           display: flex;
@@ -196,7 +207,7 @@ export default function AboutIntro({
         /* --- body paragraph ----------------------------------------- */
         .ai-body {
           margin: clamp(20px, 2.8vw, 80px) 0 0;
-          padding-left: 0.9%;
+          padding-left: var(--ai-indent);
           padding-right: 3.5%;
           font-family: 'f2', 'Segoe UI', sans-serif;
           font-size: clamp(14px, 1.07vw, 26px);
@@ -217,7 +228,7 @@ export default function AboutIntro({
            indent so both blocks start on the same line. */
         .ai-blurb {
           margin: 0;
-          padding-left: 0.9%;
+          padding-left: var(--ai-indent);
           font-family: 'f2', 'Segoe UI', sans-serif;
           font-size: clamp(13px, 0.95vw, 22px);
           line-height: 1.4;
@@ -230,7 +241,7 @@ export default function AboutIntro({
           gap: 0.5em;
           list-style: none;
           margin: 1.4em 0 0;
-          padding: 0 0 0 0.9%;
+          padding: 0 0 0 var(--ai-indent);
           font-size: clamp(11px, 0.72vw, 17px);
         }
 
