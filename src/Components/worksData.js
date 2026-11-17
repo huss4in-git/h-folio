@@ -70,7 +70,6 @@ export const WORKS = [
         label: "Intro",
         heading: ["A front door for", "Indian green coffee"],
         body: "Qahua Cultr exports specialty green coffee from India, sourcing Arabica and Robusta from Chikmagalur, Coorg and Wayanad. The website is the company's introduction to buyers abroad: who they are, where the beans come from, and how to start a conversation.",
-        lead: true,
         media: { layout: "full", items: [{ src: "/coffee.mp4", fit: "natural" }] },
       },
       {
@@ -129,7 +128,7 @@ export const WORKS = [
         { label: "Client", lines: ["Qahua Cultr"] },
         { label: "My role", lines: ["Designer &", "developer"] },
       ],
-      team: ["H. Nizaan (design, development)"],
+      team: ["Hussaib Nizaan (Design, Development)"],
     },
   },
   {
@@ -151,7 +150,6 @@ export const WORKS = [
         label: "Intro",
         heading: ["Freight forwarding", "for the Gulf"],
         body: "Luke Shipping moves cargo across Saudi Arabia and the wider GCC by road, air and sea. Alongside transport they handle customs clearance, warehousing and project cargo, so a business can hand over a shipment and stop worrying about it. I designed and built their website to show all of that clearly.",
-        lead: true,
         media: {
           layout: "full",
           items: [
@@ -195,7 +193,7 @@ export const WORKS = [
         { label: "Client", lines: ["Luke Shipping", "Company"] },
         { label: "My role", lines: ["Designer &", "developer"] },
       ],
-      team: ["H. Nizaan (design, development)"],
+      team: ["Hussain Nizaan (Design, Development)"],
     },
   },
 ];
